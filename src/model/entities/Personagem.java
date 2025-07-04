@@ -12,7 +12,8 @@ public class Personagem {
 	private int vidaMax;
 	private int manaAtual;
 	private int manaMax;
-	private int xp;
+	private int xp = 0;
+	private int nivel = 1;
 	private double deslocamento;
 	private int bonusProfic;
 	private int forca;
@@ -40,7 +41,6 @@ public class Personagem {
 		this.vidaMax = vidaMax;
 		this.manaAtual = manaMax;
 		this.manaMax = manaMax;
-		this.xp = xp;
 		this.deslocamento = deslocamento;
 		this.bonusProfic = bonusProfic;
 		this.forca = forca;
@@ -53,6 +53,14 @@ public class Personagem {
 
 	
 	
+	public int getNivel() {
+		return nivel;
+	}
+
+	public void setNivel(int nivel) {
+		this.nivel = nivel;
+	}
+
 	public Integer getId() {
 		return Id;
 	}

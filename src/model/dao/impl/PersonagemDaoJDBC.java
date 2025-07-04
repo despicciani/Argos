@@ -43,8 +43,8 @@ public class PersonagemDaoJDBC implements PersonagemDao{
 			conn.setAutoCommit(false);
 			
 			stPersonagem = conn.prepareStatement(
-					"INSERT INTO Personagens (nome, id_classe_fk, id_raca_fk, vidaAtual, vidaMax, manaAtual, manaMax, xp, deslocamento, forca, destreza, constituicao, inteligencia, sabedoria, carisma, habilidades, atributoAtaque) " +
-				    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",  Statement.RETURN_GENERATED_KEYS); 
+					"INSERT INTO Personagens (nome, id_classe_fk, id_raca_fk, vidaAtual, vidaMax, manaAtual, manaMax, xp, nivel, deslocamento, forca, destreza, constituicao, inteligencia, sabedoria, carisma, habilidades, atributoAtaque) " +
+				    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",  Statement.RETURN_GENERATED_KEYS); 
 				
 			
 				
@@ -56,17 +56,18 @@ public class PersonagemDaoJDBC implements PersonagemDao{
 			stPersonagem.setInt(6, obj.getManaAtual());
 			stPersonagem.setInt(7, obj.getManaMax());
 			stPersonagem.setInt(8, obj.getXp());
-			stPersonagem.setDouble(9, obj.getDeslocamento());
-			stPersonagem.setInt(10, obj.getForca());
-			stPersonagem.setInt(11, obj.getDestreza());
-			stPersonagem.setInt(12, obj.getConstituicao());
-			stPersonagem.setInt(13, obj.getInteligencia());
-			stPersonagem.setInt(14, obj.getSabedoria());
-			stPersonagem.setInt(15, obj.getCarisma());
-			stPersonagem.setString(17, obj.getAtributoAtaque());
+			stPersonagem.setInt(9, obj.getNivel());
+			stPersonagem.setDouble(10, obj.getDeslocamento());
+			stPersonagem.setInt(11, obj.getForca());
+			stPersonagem.setInt(12, obj.getDestreza());
+			stPersonagem.setInt(13, obj.getConstituicao());
+			stPersonagem.setInt(14, obj.getInteligencia());
+			stPersonagem.setInt(15, obj.getSabedoria());
+			stPersonagem.setInt(16, obj.getCarisma());
+			stPersonagem.setString(18, obj.getAtributoAtaque());
 			
 			String habilidades = String.join(";", obj.getHabilidades());
-	        stPersonagem.setString(16, habilidades);
+	        stPersonagem.setString(17, habilidades);
 	        
 	        int rowsAffected = stPersonagem.executeUpdate();
 	        
@@ -126,7 +127,7 @@ public class PersonagemDaoJDBC implements PersonagemDao{
 	        
 	        stPersonagem = conn.prepareStatement(
 	            "UPDATE PERSONAGENS " +
-	            "SET nome = ?, id_classe_fk = ?, id_raca_fk = ?, vidaAtual = ?, vidaMax = ?, manaAtual = ?, manaMax = ?, xp = ?, deslocamento = ?, forca = ?, destreza = ?, constituicao = ?, inteligencia = ?, sabedoria = ?, carisma = ?, habilidades = ?, atributoAtaque = ?" +
+	            "SET nome = ?, id_classe_fk = ?, id_raca_fk = ?, vidaAtual = ?, vidaMax = ?, manaAtual = ?, manaMax = ?, xp = ?, nivel = ?, deslocamento = ?, forca = ?, destreza = ?, constituicao = ?, inteligencia = ?, sabedoria = ?, carisma = ?, habilidades = ?, atributoAtaque = ?" +
 	            "WHERE id_personagem = ?");
 
 	        stPersonagem.setString(1, obj.getNome());
@@ -137,17 +138,18 @@ public class PersonagemDaoJDBC implements PersonagemDao{
 			stPersonagem.setInt(6, obj.getManaAtual());
 			stPersonagem.setInt(7, obj.getManaMax());
 			stPersonagem.setInt(8, obj.getXp());
-			stPersonagem.setDouble(9, obj.getDeslocamento());
-			stPersonagem.setInt(10, obj.getForca());
-			stPersonagem.setInt(11, obj.getDestreza());
-			stPersonagem.setInt(12, obj.getConstituicao());
-			stPersonagem.setInt(13, obj.getInteligencia());
-			stPersonagem.setInt(14, obj.getSabedoria());
-			stPersonagem.setInt(15, obj.getCarisma());
-			stPersonagem.setString(17, obj.getAtributoAtaque());
+			stPersonagem.setInt(9, obj.getNivel());
+			stPersonagem.setDouble(10, obj.getDeslocamento());
+			stPersonagem.setInt(11, obj.getForca());
+			stPersonagem.setInt(12, obj.getDestreza());
+			stPersonagem.setInt(13, obj.getConstituicao());
+			stPersonagem.setInt(14, obj.getInteligencia());
+			stPersonagem.setInt(15, obj.getSabedoria());
+			stPersonagem.setInt(16, obj.getCarisma());
+			stPersonagem.setString(18, obj.getAtributoAtaque());
 			
 			String habilidades = String.join(";", obj.getHabilidades());
-	        stPersonagem.setString(16, habilidades);
+	        stPersonagem.setString(17, habilidades);
 	        
 	        
 	        stPersonagem.setInt(18, obj.getId()); 
@@ -304,6 +306,7 @@ public class PersonagemDaoJDBC implements PersonagemDao{
 	    obj.setManaAtual(rs.getInt("manaAtual"));
 	    obj.setManaMax(rs.getInt("manaMax"));
 	    obj.setXp(rs.getInt("xp"));
+	    obj.setXp(rs.getInt("nivel"));
 	    obj.setDeslocamento(rs.getInt("deslocamento"));
 	    obj.setForca(rs.getInt("forca"));
 	    obj.setDestreza(rs.getInt("destreza"));
