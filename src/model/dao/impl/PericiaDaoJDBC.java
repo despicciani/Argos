@@ -6,36 +6,34 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import db.DB;
 import db.DbException;
-import model.dao.ClasseDao;
-import model.entities.Classe;
+import model.dao.PericiaDao;
+import model.entities.Atributo;
+import model.entities.Pericia;
 
-public class ClasseDaoJDBC implements ClasseDao{
-
-	private Connection conn;
+public class PericiaDaoJDBC implements PericiaDao{
 	
-	public ClasseDaoJDBC(Connection conn) {
+	private Connection conn;
+
+	public PericiaDaoJDBC(Connection conn) {
 		this.conn = conn;
 	}
-	
+
 	@Override
-	public void insert(Classe obj) {
+	public void insert(Pericia obj) {
 		PreparedStatement st = null;
 		try {
 			st = conn.prepareStatement(
-					"INSERT INTO Classes (nome, dadoDeVida, proficiencias) " +
+					"INSERT INTO Pericias (nome, atributo_base, id_campanha_fk) " +
 				    "VALUES (?, ?, ?)",  Statement.RETURN_GENERATED_KEYS); 
 				
 			st.setString(1, obj.getNome());
-			st.setInt(2, obj.getDadoDeVida());
+			st.setString(2, obj.getAtributoBase().name());
+			st.setInt(3, obj.getIdCampanha());
 			
-			String proficiencias = String.join(";", obj.getProficiencias());
-	        st.setString(3, proficiencias);
-	        
 	        int rowsAffected = st.executeUpdate();
 	        
 	        if (rowsAffected > 0) {
@@ -45,7 +43,6 @@ public class ClasseDaoJDBC implements ClasseDao{
 	                obj.setId(id); 
 	            }
 	            DB.closeResultSet(rs);
-			
 	        }
 		}
 		catch (SQLException e) {
@@ -57,22 +54,18 @@ public class ClasseDaoJDBC implements ClasseDao{
 	}
 
 	@Override
-	public void update(Classe obj) {
+	public void update(Pericia obj) {
 		PreparedStatement st = null;
 		try {
 			st = conn.prepareStatement(
-					"UPDATE Classes "
-				    + "SET nome = ?, dadoDeVida = ?, proficiencias = ? "
-		            + "WHERE Id = ?");
+					"UPDATE Pericias "
+				    + "SET nome = ?, atributoBase = ? "
+		            + "WHERE id_pericia = ?");
 				
 				
 			st.setString(1, obj.getNome());
-			st.setInt(2, obj.getDadoDeVida());
-			
-			String proficiencias = String.join(";", obj.getProficiencias());
-	        st.setString(3, proficiencias);
-			
-	        st.setInt(4, obj.getId());
+			st.setString(2, obj.getAtributoBase().name());
+	        st.setInt(3, obj.getId());
 	        
 	        st.executeUpdate();
 
@@ -83,14 +76,13 @@ public class ClasseDaoJDBC implements ClasseDao{
 		finally {
 			DB.closeStatement(st);
 		}		
-		
 	}
 
 	@Override
 	public void deleteById(Integer Id) {
 		PreparedStatement st = null;
 		try {
-			st = conn.prepareStatement("DELETE FROM Classes WHERE Id = ?");
+			st = conn.prepareStatement("DELETE FROM Pericias WHERE id_pericia = ?");
 			
 			st.setInt(1, Id);
 			
@@ -105,16 +97,16 @@ public class ClasseDaoJDBC implements ClasseDao{
 	}
 
 	@Override
-	public Classe findById(Integer Id) {
+	public Pericia findById(Integer Id) {
 		PreparedStatement st = null;
 	    ResultSet rs = null;
 	    try {
-	        st = conn.prepareStatement("SELECT * FROM Classes WHERE Id = ?");
+	        st = conn.prepareStatement("SELECT * FROM Pericias WHERE id_pericia= ?");
 	        st.setInt(1, Id);
 	        rs = st.executeQuery();
 
 	        if (rs.next()) { 
-	            Classe obj = instantiateClasse(rs);
+	            Pericia obj = instantiatePericia(rs);
 	            return obj;
 	        }
 	        return null; 
@@ -129,17 +121,17 @@ public class ClasseDaoJDBC implements ClasseDao{
 	}
 
 	@Override
-	public List<Classe> findAll() {
+	public List<Pericia> findAll() {
 		PreparedStatement st = null;
 	    ResultSet rs = null;
 	    try {
-	        st = conn.prepareStatement("SELECT * FROM Classes ORDER BY nome");
+	        st = conn.prepareStatement("SELECT * FROM Pericias ORDER BY nome");
 	        rs = st.executeQuery();
 
-	        List<Classe> list = new ArrayList<>();
+	        List<Pericia> list = new ArrayList<>();
 
 	        while (rs.next()) {
-	            Classe obj = instantiateClasse(rs);
+	            Pericia obj = instantiatePericia(rs);
 	            list.add(obj);
 	        }
 	        return list;
@@ -153,18 +145,12 @@ public class ClasseDaoJDBC implements ClasseDao{
 	    }
 	}
 	
-	private Classe instantiateClasse(ResultSet rs) throws SQLException {
-	    Classe obj = new Classe();
-	    obj.setId(rs.getInt("Id"));
-	    obj.setNome(rs.getString("nome"));
-	    obj.setDadoDeVida(rs.getInt("dadoDeVida"));
-
-	    String proficienciasDoBanco = rs.getString("proficiencias");
-	    if (proficienciasDoBanco != null && !proficienciasDoBanco.isEmpty()) {
-	        String[] tracosArray = proficienciasDoBanco.split(";");
-	        obj.setProficiencias(new ArrayList<>(Arrays.asList(tracosArray)));
-	    }
-	    return obj;
+	private Pericia instantiatePericia(ResultSet rs) throws SQLException {
+	    Pericia pericia = new Pericia();
+	    pericia.setId(rs.getInt("id_pericia"));
+	    pericia.setNome(rs.getString("nome"));
+	    pericia.setAtributoBase(Atributo.valueOf(rs.getString("atributo_base")));
+	    pericia.setIdCampanha(rs.getInt("id_campanha_fk"));
+	    return pericia;
 	}
-
 }

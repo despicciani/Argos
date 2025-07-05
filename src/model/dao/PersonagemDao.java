@@ -11,5 +11,6 @@ public interface PersonagemDao {
 	public void deleteById(Integer Id);
 	public Personagem findById(Integer Id);
 	public List<Personagem> findAll();
+	public List<Personagem> findAllByCampanhaId(Integer campanhaId);
 	
 }

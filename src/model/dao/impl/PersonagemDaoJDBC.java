@@ -13,10 +13,13 @@ import db.DB;
 import db.DbException;
 import model.dao.ClasseDao;
 import model.dao.ItemDao;
+import model.dao.PericiaDao;
 import model.dao.PersonagemDao;
 import model.dao.RacaDao;
+import model.entities.Atributo;
 import model.entities.Classe;
 import model.entities.Item;
+import model.entities.Pericia;
 import model.entities.Personagem;
 import model.entities.Raca;
 
@@ -26,25 +29,28 @@ public class PersonagemDaoJDBC implements PersonagemDao{
 	private RacaDao racaDao;
 	private ClasseDao classeDao;
 	private ItemDao itemDao;
+	private PericiaDao periciaDao;
 
 	
-	public PersonagemDaoJDBC(Connection conn, RacaDao racaDao, ClasseDao classeDao, ItemDao itemDao) {
+	public PersonagemDaoJDBC(Connection conn, RacaDao racaDao, ClasseDao classeDao, ItemDao itemDao, PericiaDao periciaDao) {
 		this.conn = conn;
 		this.racaDao = racaDao;
         this.classeDao = classeDao;
         this.itemDao = itemDao;
+        this.periciaDao = periciaDao;
 	}
 	
 	@Override
 	public void insert(Personagem obj) {
 		PreparedStatement stPersonagem = null;
         PreparedStatement stInventario = null;
+        PreparedStatement stPericias = null;
 		try {
 			conn.setAutoCommit(false);
 			
 			stPersonagem = conn.prepareStatement(
-					"INSERT INTO Personagens (nome, id_classe_fk, id_raca_fk, vidaAtual, vidaMax, manaAtual, manaMax, xp, nivel, deslocamento, forca, destreza, constituicao, inteligencia, sabedoria, carisma, habilidades, atributoAtaque) " +
-				    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",  Statement.RETURN_GENERATED_KEYS); 
+					"INSERT INTO Personagens (nome, id_classe_fk, id_raca_fk, vidaAtual, vidaMax, manaAtual, manaMax, xp, nivel, deslocamento, forca, destreza, constituicao, inteligencia, sabedoria, carisma, habilidades, atributoAtaque, id_campanha_fk) " +
+				    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",  Statement.RETURN_GENERATED_KEYS); 
 				
 			
 				
@@ -64,7 +70,8 @@ public class PersonagemDaoJDBC implements PersonagemDao{
 			stPersonagem.setInt(14, obj.getInteligencia());
 			stPersonagem.setInt(15, obj.getSabedoria());
 			stPersonagem.setInt(16, obj.getCarisma());
-			stPersonagem.setString(18, obj.getAtributoAtaque());
+			stPersonagem.setString(18, obj.getAtributoAtaque().name());
+			stPersonagem.setInt(19, obj.getIdCampanha());
 			
 			String habilidades = String.join(";", obj.getHabilidades());
 	        stPersonagem.setString(17, habilidades);
@@ -95,6 +102,15 @@ public class PersonagemDaoJDBC implements PersonagemDao{
 	            stInventario.executeUpdate(); 
 	        }
 	        
+	        stPericias = conn.prepareStatement(
+	        	    "INSERT INTO PERSONAGEM_PERICIA (id_personagem_fk, id_pericia_fk) VALUES (?, ?)");
+
+	        	for (Pericia pericia : obj.getPericias()) {
+	        	    stPericias.setInt(1, obj.getId());
+	        	    stPericias.setInt(2, pericia.getId());
+	        	    stPericias.executeUpdate();
+	        	}
+	        
 	        conn.commit();
 	        
 		}
@@ -110,6 +126,7 @@ public class PersonagemDaoJDBC implements PersonagemDao{
 		finally {
 			DB.closeStatement(stPersonagem);
 			DB.closeStatement(stInventario);
+			DB.closeStatement(stPericias);
 			try {
 	            conn.setAutoCommit(true);
 	        } catch (SQLException e) {
@@ -122,12 +139,13 @@ public class PersonagemDaoJDBC implements PersonagemDao{
 	public void update(Personagem obj) {
 		PreparedStatement stPersonagem = null;
 	    PreparedStatement stInventario = null;
+	    PreparedStatement stPericias = null;
 	    try {
 	        conn.setAutoCommit(false);
 	        
 	        stPersonagem = conn.prepareStatement(
 	            "UPDATE PERSONAGENS " +
-	            "SET nome = ?, id_classe_fk = ?, id_raca_fk = ?, vidaAtual = ?, vidaMax = ?, manaAtual = ?, manaMax = ?, xp = ?, nivel = ?, deslocamento = ?, forca = ?, destreza = ?, constituicao = ?, inteligencia = ?, sabedoria = ?, carisma = ?, habilidades = ?, atributoAtaque = ?" +
+	            "SET nome = ?, id_classe_fk = ?, id_raca_fk = ?, vidaAtual = ?, vidaMax = ?, manaAtual = ?, manaMax = ?, xp = ?, nivel = ?, deslocamento = ?, forca = ?, destreza = ?, constituicao = ?, inteligencia = ?, sabedoria = ?, carisma = ?, habilidades = ?, atributoAtaque = ?, idCampanha = ?" +
 	            "WHERE id_personagem = ?");
 
 	        stPersonagem.setString(1, obj.getNome());
@@ -146,13 +164,14 @@ public class PersonagemDaoJDBC implements PersonagemDao{
 			stPersonagem.setInt(14, obj.getInteligencia());
 			stPersonagem.setInt(15, obj.getSabedoria());
 			stPersonagem.setInt(16, obj.getCarisma());
-			stPersonagem.setString(18, obj.getAtributoAtaque());
+			stPersonagem.setString(18, obj.getAtributoAtaque().name());
+			stPersonagem.setInt(19, obj.getIdCampanha());
 			
 			String habilidades = String.join(";", obj.getHabilidades());
 	        stPersonagem.setString(17, habilidades);
 	        
 	        
-	        stPersonagem.setInt(18, obj.getId()); 
+	        stPersonagem.setInt(20, obj.getId()); 
 	        stPersonagem.executeUpdate();
 	        DB.closeStatement(stPersonagem);
 
@@ -170,6 +189,20 @@ public class PersonagemDaoJDBC implements PersonagemDao{
 	            stInventario.setInt(3, 1);
 	            stInventario.executeUpdate();
 	        }
+	        
+	        stPericias = conn.prepareStatement("DELETE FROM PERSONAGEM_PERICIA WHERE id_personagem_fk = ?");
+	        stPericias.setInt(1, obj.getId());
+	        stPericias.executeUpdate();
+	        DB.closeStatement(stPericias); 
+
+	        stPericias = conn.prepareStatement(
+	            "INSERT INTO PERSONAGEM_PERICIA (id_personagem_fk, id_pericia_fk) VALUES (?, ?)");
+
+	        for (Pericia pericia : obj.getPericias()) {
+	            stPericias.setInt(1, obj.getId());
+	            stPericias.setInt(2, pericia.getId());
+	            stPericias.executeUpdate();
+	        }
 
 	        conn.commit();
 
@@ -183,6 +216,7 @@ public class PersonagemDaoJDBC implements PersonagemDao{
 	    } finally {
 	        DB.closeStatement(stPersonagem);
 	        DB.closeStatement(stInventario);
+	        DB.closeStatement(stPericias);
 	        try {
 	            conn.setAutoCommit(true);
 	        } catch (SQLException e) {
@@ -197,6 +231,11 @@ public class PersonagemDaoJDBC implements PersonagemDao{
 		PreparedStatement st = null;
 	    try {
 	        conn.setAutoCommit(false);
+	        
+	        st = conn.prepareStatement("DELETE FROM PERSONAGEM_PERICIA WHERE id_personagem_fk = ?");
+	        st.setInt(1, Id);
+	        st.executeUpdate();
+	        DB.closeStatement(st);
 
 	        st = conn.prepareStatement("DELETE FROM INVENTARIO WHERE id_personagem_fk = ?");
 	        st.setInt(1, Id);
@@ -248,6 +287,9 @@ public class PersonagemDaoJDBC implements PersonagemDao{
 	            
 	            List<Item> inventario = buscarInventarioPersonagem(personagem.getId());
 	            personagem.setInventario(inventario);
+	            
+	            List<Pericia> pericias = buscarPericiasDoPersonagem(personagem.getId());
+	            personagem.setPericias(pericias); 
 
 	            return personagem;
 	        }
@@ -284,6 +326,9 @@ public class PersonagemDaoJDBC implements PersonagemDao{
 		            List<Item> inventario = buscarInventarioPersonagem(personagem.getId());
 		            personagem.setInventario(inventario);
 		            
+		            List<Pericia> pericias = buscarPericiasDoPersonagem(personagem.getId());
+		            personagem.setPericias(pericias); 
+		            
 		            listaDePersonagens.add(personagem);
 		        }
 		        return listaDePersonagens;
@@ -306,7 +351,7 @@ public class PersonagemDaoJDBC implements PersonagemDao{
 	    obj.setManaAtual(rs.getInt("manaAtual"));
 	    obj.setManaMax(rs.getInt("manaMax"));
 	    obj.setXp(rs.getInt("xp"));
-	    obj.setXp(rs.getInt("nivel"));
+	    obj.setNivel(rs.getInt("nivel"));
 	    obj.setDeslocamento(rs.getInt("deslocamento"));
 	    obj.setForca(rs.getInt("forca"));
 	    obj.setDestreza(rs.getInt("destreza"));
@@ -314,7 +359,8 @@ public class PersonagemDaoJDBC implements PersonagemDao{
 	    obj.setInteligencia(rs.getInt("inteligencia"));
 	    obj.setSabedoria(rs.getInt("sabedoria"));
 	    obj.setCarisma(rs.getInt("carisma"));
-	    obj.setAtributoAtaque(rs.getString("atributoAtaque"));
+	    obj.setAtributoAtaque(Atributo.valueOf(rs.getString("atributoAtaque")));
+	    obj.setIdCampanha(rs.getInt("id_campanha_fk"));
 	    
 	    obj.setRaca(raca);
 	    obj.setClasse(classe);
@@ -350,6 +396,70 @@ public class PersonagemDaoJDBC implements PersonagemDao{
 	        return inventario;
 	    }
 	    finally {
+	        DB.closeStatement(st);
+	        DB.closeResultSet(rs);
+	    }
+	}
+			
+	private List<Pericia> buscarPericiasDoPersonagem(Integer personagemId) throws SQLException {
+	    PreparedStatement st = null;
+	    ResultSet rs = null;
+	    try {
+	        st = conn.prepareStatement("SELECT id_pericia_fk FROM PERSONAGEM_PERICIA WHERE id_personagem_fk = ?");
+	        
+	        st.setInt(1, personagemId);
+	        rs = st.executeQuery();
+
+	        List<Pericia> pericias = new ArrayList<>();
+	        
+	        while (rs.next()) {
+	            int periciaId = rs.getInt("id_pericia_fk");
+
+	            Pericia pericia = this.periciaDao.findById(periciaId); 
+	            
+	            pericias.add(pericia);
+	        }
+	        return pericias;
+	    }
+	    finally {
+	        DB.closeStatement(st);
+	        DB.closeResultSet(rs);
+	    }
+	}
+	
+	public List<Personagem> findAllByCampanhaId(Integer campanhaId){
+		PreparedStatement st = null;
+	    ResultSet rs = null;
+	    try {
+	        st = conn.prepareStatement("SELECT * FROM PERSONAGENS WHERE id_campanha_fk = ? ORDER BY nome");
+	        st.setInt(1, campanhaId);
+	        rs = st.executeQuery();
+
+	        List<Personagem> listaDePersonagens = new ArrayList<>();
+	        
+	        while (rs.next()) {
+	            
+	            int racaId = rs.getInt("id_raca_fk");
+	            int classeId = rs.getInt("id_classe_fk");
+
+	            Raca raca = this.racaDao.findById(racaId);
+	            Classe classe = this.classeDao.findById(classeId);
+	            
+	            Personagem personagem = instantiatePersonagem(rs, raca, classe);
+	            
+	            List<Item> inventario = buscarInventarioPersonagem(personagem.getId());
+	            personagem.setInventario(inventario);
+	            
+	            List<Pericia> pericias = buscarPericiasDoPersonagem(personagem.getId());
+	            personagem.setPericias(pericias); 
+	            
+	            listaDePersonagens.add(personagem);
+	        }
+	        return listaDePersonagens;
+	        
+	    } catch (SQLException e) {
+	        throw new DbException(e.getMessage());
+	    } finally {
 	        DB.closeStatement(st);
 	        DB.closeResultSet(rs);
 	    }

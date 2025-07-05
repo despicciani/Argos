@@ -23,8 +23,10 @@ public class Personagem {
 	private int sabedoria;
 	private int carisma;
 	private List<String> habilidades = new ArrayList<>();
-	private String atributoAtaque;
+	private Atributo atributoAtaque;
 	private List<Item> inventario = new ArrayList<>();
+	private List<Pericia> pericias = new ArrayList<>();
+	private int idCampanha;
 	private Integer Id;
 
 	public Personagem() {
@@ -33,7 +35,7 @@ public class Personagem {
 	
 	public Personagem(String nome, Classe classe, Raca raca, int vidaMax, int manaMax, int xp, double deslocamento,
 			int bonusProfic, int forca, int destreza, int constituicao, int inteligencia, int sabedoria, int carisma,
-			String atributoAtaque) {
+			String atributoAtaque, int idCampanha) {
 		this.nome = nome;
 		this.classe = classe;
 		this.raca = raca;
@@ -49,10 +51,18 @@ public class Personagem {
 		this.inteligencia = inteligencia;
 		this.sabedoria = sabedoria;
 		this.carisma = carisma;
+		this.atributoAtaque = Atributo.valueOf(atributoAtaque);
+		this.idCampanha = idCampanha;
+	}
+	
+	public List<Pericia> getPericias() {
+		return pericias;
 	}
 
-	
-	
+	public void setPericias(List<Pericia> pericias) {
+		this.pericias = pericias;
+	}
+
 	public int getNivel() {
 		return nivel;
 	}
@@ -209,35 +219,33 @@ public class Personagem {
 		this.habilidades = habilidades;
 	}
 
-	public String getAtributoAtaque() {
+	public Atributo getAtributoAtaque() {
 		return atributoAtaque;
 	}
 
-	public void setAtributoAtaque(String atributoAtaque) {
+	public void setAtributoAtaque(Atributo atributoAtaque) {
 		this.atributoAtaque = atributoAtaque;
 	}
 
 	public int getCdMagia() {
 		return switch (this.atributoAtaque) {
-		case "forca" -> getModificadorForca() + 10;
-		case "destreza" -> getModificadorDestreza() + 10;
-		case "constituicao" -> getModificadorConstituicao() + 10;
-		case "inteligencia" -> getModificadorInteligencia() + 10;
-		case "sabedoria" -> getModificadorSabedoria() + 10;
-		case "carisma" -> getModificadorCarisma() + 10;
-		default -> 0;
+		case FORCA -> getModificadorForca() + 10;
+		case DESTREZA -> getModificadorDestreza() + 10;
+		case CONSTITUICAO -> getModificadorConstituicao() + 10;
+		case INTELIGENCIA -> getModificadorInteligencia() + 10;
+		case SABEDORIA -> getModificadorSabedoria() + 10;
+		case CARISMA -> getModificadorCarisma() + 10;
 		};
 	}
 
 	public int getModificadorAtq() {
 		return switch (this.atributoAtaque) {
-		case "forca" -> getModificadorForca() + getBonusProfic();
-		case "destreza" -> getModificadorDestreza() + getBonusProfic();
-		case "constituicao" -> getModificadorConstituicao() + getBonusProfic();
-		case "inteligencia" -> getModificadorInteligencia() + getBonusProfic();
-		case "sabedoria" -> getModificadorSabedoria() + getBonusProfic();
-		case "carisma" -> getModificadorCarisma() + getBonusProfic();
-		default -> 0;
+		case FORCA -> getModificadorForca() + getBonusProfic();
+		case DESTREZA -> getModificadorDestreza() + getBonusProfic();
+		case CONSTITUICAO -> getModificadorConstituicao() + getBonusProfic();
+		case INTELIGENCIA -> getModificadorInteligencia() + getBonusProfic();
+		case SABEDORIA -> getModificadorSabedoria() + getBonusProfic();
+		case CARISMA -> getModificadorCarisma() + getBonusProfic();
 		};
 	}
 
@@ -272,7 +280,46 @@ public class Personagem {
 	public int getModificadorCarisma() {
 		return (int) Math.floor((getCarisma() + raca.getBonusCarisma() - 10) / 2.0);
 	}
+	
+	public int getIdCampanha() {
+		return idCampanha;
+	}
 
+	public void setIdCampanha(int idCampanha) {
+		this.idCampanha = idCampanha;
+	}
+
+	public int calcularBonusPericia(Pericia pericia) {
+	    int modificador = 0;
+	    switch (pericia.getAtributoBase()) {
+	        case FORCA:
+	            modificador = getModificadorForca();
+	            break;
+	        case DESTREZA:
+	            modificador = getModificadorDestreza();
+	            break;
+	        case CONSTITUICAO:
+	            modificador = getModificadorDestreza();
+	            break;
+	        case INTELIGENCIA:
+	            modificador = getModificadorDestreza();
+	            break;
+	        case SABEDORIA:
+	            modificador = getModificadorDestreza();
+	            break;
+	        case CARISMA:
+	            modificador = getModificadorDestreza();
+	            break;
+	    }
+
+	    if (pericias.contains(pericia)) {
+	        modificador += this.getBonusProfic();
+	    }
+	    
+	    return modificador;
+	}
+	
+	
 	@Override
 	public int hashCode() {
 		return Objects.hash(nome);
@@ -294,11 +341,12 @@ public class Personagem {
 	public String toString() {
 		return "Personagem [nome=" + nome + ", classe=" + classe + ", raca=" + raca + ", vidaAtual=" + vidaAtual
 				+ ", vidaMax=" + vidaMax + ", manaAtual=" + manaAtual + ", manaMax=" + manaMax + ", xp=" + xp
-				+ ", deslocamento=" + deslocamento + ", bonusProfic=" + bonusProfic + ", forca=" + forca + ", destreza="
-				+ destreza + ", constituicao=" + constituicao + ", inteligencia=" + inteligencia + ", sabedoria="
-				+ sabedoria + ", carisma=" + carisma + ", habilidades=" + habilidades + ", atributoAtaque="
-				+ atributoAtaque + ", inventario=" + inventario + ", Id=" + Id + "]";
+				+ ", nivel=" + nivel + ", deslocamento=" + deslocamento + ", bonusProfic=" + bonusProfic + ", forca="
+				+ forca + ", destreza=" + destreza + ", constituicao=" + constituicao + ", inteligencia=" + inteligencia
+				+ ", sabedoria=" + sabedoria + ", carisma=" + carisma + ", habilidades=" + habilidades
+				+ ", atributoAtaque=" + atributoAtaque + ", inventario=" + inventario + ", pericias=" + pericias
+				+ ", idCampanha=" + idCampanha + ", Id=" + Id + "]";
 	}
-	
+
 	
 }

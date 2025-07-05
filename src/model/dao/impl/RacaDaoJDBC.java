@@ -102,7 +102,7 @@ public class RacaDaoJDBC implements RacaDao{
 	public void deleteById(Integer Id) {
 		PreparedStatement st = null;
 		try {
-			st = conn.prepareStatement("DELETE FROM Racas WHERE id_raca = ?");
+			st = conn.prepareStatement("DELETE FROM Racas WHERE Id = ?");
 			
 			st.setInt(1, Id);
 			
@@ -121,7 +121,7 @@ public class RacaDaoJDBC implements RacaDao{
 		PreparedStatement st = null;
 	    ResultSet rs = null;
 	    try {
-	        st = conn.prepareStatement("SELECT * FROM Racas WHERE id_raca = ?");
+	        st = conn.prepareStatement("SELECT * FROM Racas WHERE Id = ?");
 	        st.setInt(1, Id);
 	        rs = st.executeQuery();
 
@@ -168,7 +168,7 @@ public class RacaDaoJDBC implements RacaDao{
 	
 	private Raca instantiateRaca(ResultSet rs) throws SQLException {
 	    Raca obj = new Raca();
-	    obj.setId(rs.getInt("id_raca"));
+	    obj.setId(rs.getInt("Id"));
 	    obj.setNome(rs.getString("nome"));
 	    obj.setDeslocamentoBase(rs.getInt("deslocamentoBase"));
 	    obj.setBonusForca(rs.getInt("bonusForca"));
