@@ -35,7 +35,7 @@ public class Personagem {
 	
 	public Personagem(String nome, Classe classe, Raca raca, int vidaMax, int manaMax, int xp, double deslocamento,
 			int bonusProfic, int forca, int destreza, int constituicao, int inteligencia, int sabedoria, int carisma,
-			String atributoAtaque, int idCampanha) {
+			Atributo atributoAtaque, int idCampanha) {
 		this.nome = nome;
 		this.classe = classe;
 		this.raca = raca;
@@ -51,7 +51,7 @@ public class Personagem {
 		this.inteligencia = inteligencia;
 		this.sabedoria = sabedoria;
 		this.carisma = carisma;
-		this.atributoAtaque = Atributo.valueOf(atributoAtaque);
+		this.atributoAtaque = atributoAtaque;
 		this.idCampanha = idCampanha;
 	}
 	

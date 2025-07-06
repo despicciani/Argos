@@ -145,7 +145,7 @@ public class PersonagemDaoJDBC implements PersonagemDao{
 	        
 	        stPersonagem = conn.prepareStatement(
 	            "UPDATE PERSONAGENS " +
-	            "SET nome = ?, id_classe_fk = ?, id_raca_fk = ?, vidaAtual = ?, vidaMax = ?, manaAtual = ?, manaMax = ?, xp = ?, nivel = ?, deslocamento = ?, forca = ?, destreza = ?, constituicao = ?, inteligencia = ?, sabedoria = ?, carisma = ?, habilidades = ?, atributoAtaque = ?, idCampanha = ?" +
+	            "SET nome = ?, id_classe_fk = ?, id_raca_fk = ?, vidaAtual = ?, vidaMax = ?, manaAtual = ?, manaMax = ?, xp = ?, nivel = ?, deslocamento = ?, forca = ?, destreza = ?, constituicao = ?, inteligencia = ?, sabedoria = ?, carisma = ?, habilidades = ?, atributoAtaque = ?, id_campanha_fk = ?" +
 	            "WHERE id_personagem = ?");
 
 	        stPersonagem.setString(1, obj.getNome());
@@ -272,8 +272,8 @@ public class PersonagemDaoJDBC implements PersonagemDao{
 	        st = conn.prepareStatement(
 	            "SELECT p.*, r.*, c.* " +
 	            "FROM PERSONAGENS p " +
-	            "INNER JOIN Raca r ON p.id_raca_fk = r.Id " +
-	            "INNER JOIN Classe c ON p.id_classe_fk = c.Id " +
+	            "INNER JOIN Racas r ON p.id_raca_fk = r.Id " +
+	            "INNER JOIN Classes c ON p.id_classe_fk = c.Id " +
 	            "WHERE p.id_personagem = ?");
 	        st.setInt(1, Id);
 	        rs = st.executeQuery();
