@@ -11,5 +11,5 @@ public interface CampanhaDao {
 	public void deleteById(Integer Id);
 	public Campanha findById(Integer Id);
 	public List<Campanha> findAll();
-	
+	Campanha findByNome(String nome);
 }

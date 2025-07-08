@@ -2,6 +2,7 @@ package model.services;
 
 import java.util.List;
 
+import db.DbException;
 import model.dao.CampanhaDao;
 import model.dao.PersonagemDao;
 import model.entities.Campanha;
@@ -25,6 +26,13 @@ public class CampanhaService {
 	        if (obj.getNome() == null || obj.getNome().trim().isEmpty()) {
 	            System.err.println("Erro de validação: O nome da campanha é obrigatório.");
 	            return;
+	        }
+	        
+	        if (obj.getId() == null) {
+	            Campanha existente = campanhaDao.findByNome(obj.getNome());
+	            if (existente != null) {
+	                throw new DbException("Já existe uma campanha com este nome: " + obj.getNome());
+	            }
 	        }
 	        
 	        if (obj.getId() == null) {

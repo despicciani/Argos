@@ -12,5 +12,7 @@ public interface PersonagemDao {
 	public Personagem findById(Integer Id);
 	public List<Personagem> findAll();
 	public List<Personagem> findAllByCampanhaId(Integer campanhaId);
-	
+	 Personagem findByNomeAndCampanhaId(String nome, Integer campanhaId);
+	 int countByRacaId(Integer racaId);
+	 int countByClasseId(Integer classeId);
 }

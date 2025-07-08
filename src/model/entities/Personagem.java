@@ -26,7 +26,7 @@ public class Personagem {
 	private Atributo atributoAtaque;
 	private List<Item> inventario = new ArrayList<>();
 	private List<Pericia> pericias = new ArrayList<>();
-	private int idCampanha;
+	private Integer idCampanha;
 	private Integer Id;
 
 	public Personagem() {
@@ -35,7 +35,7 @@ public class Personagem {
 	
 	public Personagem(String nome, Classe classe, Raca raca, int vidaMax, int manaMax, int xp, double deslocamento,
 			int bonusProfic, int forca, int destreza, int constituicao, int inteligencia, int sabedoria, int carisma,
-			Atributo atributoAtaque, int idCampanha) {
+			Atributo atributoAtaque, Integer idCampanha) {
 		this.nome = nome;
 		this.classe = classe;
 		this.raca = raca;
@@ -281,11 +281,11 @@ public class Personagem {
 		return (int) Math.floor((getCarisma() + raca.getBonusCarisma() - 10) / 2.0);
 	}
 	
-	public int getIdCampanha() {
+	public Integer getIdCampanha() {
 		return idCampanha;
 	}
 
-	public void setIdCampanha(int idCampanha) {
+	public void setIdCampanha(Integer idCampanha) {
 		this.idCampanha = idCampanha;
 	}
 

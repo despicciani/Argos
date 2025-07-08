@@ -132,4 +132,24 @@ public class CampanhaDaoJDBC implements CampanhaDao {
         obj.setXpProxNivel(rs.getInt("xpParaProximoNivel"));
         return obj;
     }
+    
+    @Override
+    public Campanha findByNome(String nome) {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
+            st = conn.prepareStatement("SELECT * FROM CAMPANHAS WHERE nome = ?");
+            st.setString(1, nome);
+            rs = st.executeQuery();
+            if (rs.next()) {
+                return instantiateCampanha(rs); 
+            }
+            return null;
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        } finally {
+            DB.closeStatement(st);
+            DB.closeResultSet(rs);
+        }
+    }
 }

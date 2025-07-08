@@ -465,4 +465,67 @@ public class PersonagemDaoJDBC implements PersonagemDao{
 	    }
 	}
 	
+	@Override
+	public Personagem findByNomeAndCampanhaId(String nome, Integer campanhaId) {
+	    PreparedStatement st = null;
+	    ResultSet rs = null;
+	    try {
+	        st = conn.prepareStatement(
+	            "SELECT * FROM PERSONAGENS WHERE nome = ? AND id_campanha_fk = ?");
+	        st.setString(1, nome);
+	        st.setInt(2, campanhaId);
+	        rs = st.executeQuery();
+	        if (rs.next()) {
+	            Raca raca = racaDao.findById(rs.getInt("id_raca_fk"));
+	            Classe classe = classeDao.findById(rs.getInt("id_classe_fk"));
+	            return instantiatePersonagem(rs, raca, classe);
+	        }
+	        return null;
+	    } catch (SQLException e) {
+	        throw new DbException(e.getMessage());
+	    } finally {
+	        DB.closeStatement(st);
+	        DB.closeResultSet(rs);
+	    }
+	}
+	
+	@Override
+	public int countByRacaId(Integer racaId) {
+	    PreparedStatement st = null;
+	    ResultSet rs = null;
+	    try {
+	        st = conn.prepareStatement("SELECT COUNT(*) FROM PERSONAGENS WHERE id_raca_fk = ?");
+	        st.setInt(1, racaId);
+	        rs = st.executeQuery();
+	        if (rs.next()) {
+	            return rs.getInt(1); 
+	        }
+	        return 0;
+	    } catch (SQLException e) {
+	        throw new DbException(e.getMessage());
+	    } finally {
+	        DB.closeStatement(st);
+	        DB.closeResultSet(rs);
+	    }
+	}
+	
+	@Override
+	public int countByClasseId(Integer classeId) {
+	    PreparedStatement st = null;
+	    ResultSet rs = null;
+	    try {
+	        st = conn.prepareStatement("SELECT COUNT(*) FROM PERSONAGENS WHERE id_classe_fk = ?");
+	        st.setInt(1, classeId);
+	        rs = st.executeQuery();
+	        if (rs.next()) {
+	            return rs.getInt(1); 
+	        }
+	        return 0;
+	    } catch (SQLException e) {
+	        throw new DbException(e.getMessage());
+	    } finally {
+	        DB.closeStatement(st);
+	        DB.closeResultSet(rs);
+	    }
+	}
 }
