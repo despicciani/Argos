@@ -33,7 +33,7 @@ public class ItemDaoJDBC implements ItemDao	{
 	        st.setString(2, obj.getDescricao());
 	        st.setString(3, obj.getFuncao());
 	        st.setString(4, obj.getPropriedade());
-	        st.setInt(5, obj.getAtaque());
+	        st.setString(5, obj.getAtaque());
 	        
 	        int rowsAffected = st.executeUpdate();
 	        
@@ -72,7 +72,7 @@ public class ItemDaoJDBC implements ItemDao	{
 	        
 	        st.setString(4, obj.getPropriedade());
 	        
-	        st.setInt(5, obj.getAtaque());
+	        st.setString(5, obj.getAtaque());
 			
 	        st.setInt(6, obj.getId());
 	        
@@ -161,7 +161,7 @@ public class ItemDaoJDBC implements ItemDao	{
 	    obj.setDescricao(rs.getString("descricao"));
 	    obj.setFuncao(rs.getString("funcao"));
 	    obj.setPropriedade(rs.getString("propriedade"));
-	    obj.setAtaque(rs.getInt("ataque"));
+	    obj.setAtaque(rs.getString("ataque"));
 	    
 	    return obj;
 	}

@@ -7,14 +7,14 @@ public class Item {
 	private String descricao;
 	private String funcao;
 	private String propriedade;
-	private int ataque;
+	private String ataque;
 	private Integer Id;
 	
 	public Item() {
 		
 	}
 
-	public Item(String nome, String descricao, String funcao, String propriedade, int ataque) {
+	public Item(String nome, String descricao, String funcao, String propriedade, String ataque) {
 		this.nome = nome;
 		this.descricao = descricao;
 		this.funcao = funcao;
@@ -62,11 +62,11 @@ public class Item {
 		this.propriedade = propriedade;
 	}
 
-	public int getAtaque() {
+	public String getAtaque() {
 		return ataque;
 	}
 
-	public void setAtaque(int ataque) {
+	public void setAtaque(String ataque) {
 		this.ataque = ataque;
 	}
 
