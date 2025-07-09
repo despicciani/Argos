@@ -12,6 +12,7 @@ public class Personagem {
 	private int vidaMax;
 	private int manaAtual;
 	private int manaMax;
+	private Integer sanidade;
 	private int xp = 0;
 	private int nivel = 1;
 	private double deslocamento;
@@ -22,6 +23,8 @@ public class Personagem {
 	private int inteligencia;
 	private int sabedoria;
 	private int carisma;
+	private int sucessosMorte;
+	private int falhasMorte;
 	private List<String> habilidades = new ArrayList<>();
 	private Atributo atributoAtaque;
 	private List<Item> inventario = new ArrayList<>();
@@ -33,7 +36,7 @@ public class Personagem {
 		
 	}
 	
-	public Personagem(String nome, Classe classe, Raca raca, int vidaMax, int manaMax, int xp, double deslocamento,
+	public Personagem(String nome, Classe classe, Raca raca, int vidaMax, int manaMax, Integer sanidade, int xp, double deslocamento,
 			int bonusProfic, int forca, int destreza, int constituicao, int inteligencia, int sabedoria, int carisma,
 			Atributo atributoAtaque, Integer idCampanha) {
 		this.nome = nome;
@@ -43,6 +46,7 @@ public class Personagem {
 		this.vidaMax = vidaMax;
 		this.manaAtual = manaMax;
 		this.manaMax = manaMax;
+		this.sanidade = sanidade;
 		this.deslocamento = deslocamento;
 		this.bonusProfic = bonusProfic;
 		this.forca = forca;
@@ -51,6 +55,8 @@ public class Personagem {
 		this.inteligencia = inteligencia;
 		this.sabedoria = sabedoria;
 		this.carisma = carisma;
+		this.sucessosMorte = 0;
+		this.falhasMorte = 0;
 		this.atributoAtaque = atributoAtaque;
 		this.idCampanha = idCampanha;
 	}
@@ -319,7 +325,30 @@ public class Personagem {
 	    return modificador;
 	}
 	
+	public int getSucessosMorte() {
+		return sucessosMorte;
+	}
+
+	public void setSucessosMorte(int sucessosMorte) {
+		this.sucessosMorte = sucessosMorte;
+	}
+
+	public int getFalhasMorte() {
+		return falhasMorte;
+	}
+
+	public void setFalhasMorte(int falhasMorte) {
+		this.falhasMorte = falhasMorte;
+	}
 	
+	public Integer getSanidade() {
+		return sanidade;
+	}
+
+	public void setSanidade(Integer sanidade) {
+		this.sanidade = sanidade;
+	}
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(nome);

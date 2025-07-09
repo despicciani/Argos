@@ -5,17 +5,14 @@ import java.util.Random;
 import db.DbException;
 import model.dao.CampanhaDao;
 import model.dao.PersonagemDao;
-import model.entities.Campanha;
 import model.entities.Personagem;
 
 public class PersonagemService {
 	
 	private PersonagemDao personagemDao;
-    private CampanhaDao campanhaDao;
 
     public PersonagemService(PersonagemDao personagemDao, CampanhaDao campanhaDao) {
     	this.personagemDao = personagemDao;
-    	this.campanhaDao = campanhaDao;
     }
 
     public Personagem findById(Integer id) {
@@ -70,19 +67,32 @@ public class PersonagemService {
     }
     
     public void receberDano(Integer personagemId, int dano) {
-        if (dano < 0) return; 
+    	 if (dano < 0) {
+    	        return; 
+    	    }
 
-        Personagem p = personagemDao.findById(personagemId);
-        if (p != null) {
-            int novaVida = p.getVidaAtual() - dano;
-            p.setVidaAtual(Math.max(0, novaVida)); 
-            personagemDao.update(p);
-            
-            System.out.println(p.getNome() + " recebeu " + dano + " de dano! Vida atual: " + p.getVidaAtual());
-            if (p.getVidaAtual() == 0) {
-                System.out.println(p.getNome() + " caiu inconsciente!");
-            }
-        }
+    	    Personagem p = personagemDao.findById(personagemId);
+    	    
+    	    if (p != null) {
+    	        int vidaAnterior = p.getVidaAtual();
+
+    	        int novaVida = vidaAnterior - dano;
+    	        p.setVidaAtual(Math.max(0, novaVida)); 
+
+    	        if (vidaAnterior > 0 && p.getVidaAtual() == 0) {
+    	            System.out.println(p.getNome() + " caiu inconsciente e está morrendo!");
+    	            p.setSucessosMorte(0);
+    	            p.setFalhasMorte(0);
+    	        }
+    	        
+    	        personagemDao.update(p);
+    	        
+    	        System.out.println(p.getNome() + " recebeu " + dano + " de dano! Vida atual: " + p.getVidaAtual());
+    	        
+    	        if (p.getVidaAtual() == 0 && vidaAnterior > 0) {
+    	             System.out.println("Ele agora precisa fazer testes de morte no início de seus turnos.");
+    	        }
+    	    }
     }
     
     public void receberCura(Integer personagemId, int cura) {
@@ -102,26 +112,26 @@ public class PersonagemService {
         if (personagem == null) {
             throw new IllegalArgumentException("Personagem não encontrado com o ID: " + personagemId);
         }
-        
-        Campanha campanha = campanhaDao.findById(personagem.getIdCampanha());
-        if (campanha == null) {
-            throw new IllegalStateException("Personagem está associado a uma campanha inválida.");
-        }
 
+        System.out.println(personagem.getNome() + " (Nível " + personagem.getNivel() + ") ganhou " + xpGanha + " de XP.");
         personagem.setXp(personagem.getXp() + xpGanha);
 
-        if (personagem.getXp() >= campanha.getXpProxNivel()) {
-            subirDeNivel(personagem, campanha);
-        }
 
+        int xpNecessario = (personagem.getNivel() * 10) + 10;
+        System.out.println("XP necessário para o próximo nível: " + xpNecessario + ". XP atual: " + personagem.getXp());
+        
+        if (personagem.getXp() >= xpNecessario) {
+            subirDeNivel(personagem, xpNecessario);
+        }
+        
         personagemDao.update(personagem);
-        System.out.println(personagem.getNome() + " recebeu " + xpGanha + " de XP. XP atual: " + personagem.getXp());
+        System.out.println("XP final: " + personagem.getXp());
     }
 
-    private void subirDeNivel(Personagem personagem, Campanha campanha) {
+    private void subirDeNivel(Personagem personagem, int xpCustoDoNivel) {
         System.out.println("PARABÉNS! " + personagem.getNome() + " subiu para o nível " + (personagem.getNivel() + 1) + "!");
 
-        personagem.setXp(personagem.getXp() - campanha.getXpProxNivel());
+        personagem.setXp(personagem.getXp() - xpCustoDoNivel);
         
         personagem.setNivel(personagem.getNivel() + 1);
 
@@ -130,5 +140,18 @@ public class PersonagemService {
         int vidaGanha = random.nextInt(dadoDeVida) + 1 + personagem.getModificadorConstituicao();
         personagem.setVidaMax(personagem.getVidaMax() + vidaGanha);
         personagem.setVidaAtual(personagem.getVidaMax()); 
+    }
+    
+    public void receberDanoDeSanidade(Integer personagemId, int dano) {
+        Personagem p = personagemDao.findById(personagemId);
+
+        if (p != null && p.getSanidade() != null) { 
+            int novaSanidade = p.getSanidade() - dano;
+            p.setSanidade(Math.max(0, novaSanidade));
+            personagemDao.update(p);
+            System.out.println(p.getNome() + " sofreu " + dano + " de dano de sanidade! Sanidade atual: " + p.getSanidade());
+        } else {
+            System.out.println("Este personagem não é afetado por dano de sanidade.");
+        }
     }
 }

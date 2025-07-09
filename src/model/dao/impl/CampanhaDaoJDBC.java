@@ -26,11 +26,11 @@ public class CampanhaDaoJDBC implements CampanhaDao {
         PreparedStatement st = null;
         try {
             st = conn.prepareStatement(
-                "INSERT INTO CAMPANHAS (nome, xpParaProximoNivel) VALUES (?, ?)",
+                "INSERT INTO CAMPANHAS (nome, usaSanidade) VALUES (?, ?)",
                 Statement.RETURN_GENERATED_KEYS);
 
             st.setString(1, obj.getNome());
-            st.setInt(2, obj.getXpProxNivel());
+            st.setInt(2, obj.isUsaSanidade() ? 1 : 0);
 
             int rowsAffected = st.executeUpdate();
 
@@ -55,10 +55,10 @@ public class CampanhaDaoJDBC implements CampanhaDao {
         PreparedStatement st = null;
         try {
             st = conn.prepareStatement(
-                "UPDATE CAMPANHAS SET nome = ?, xpParaProximoNivel = ? WHERE id_campanha = ?");
+                "UPDATE CAMPANHAS SET nome = ?, usaSanidade = ? WHERE id_campanha = ?");
 
             st.setString(1, obj.getNome());
-            st.setInt(2, obj.getXpProxNivel());
+            st.setInt(2, obj.isUsaSanidade() ? 1 : 0);
             st.setInt(3, obj.getId());
             
             st.executeUpdate();
@@ -129,7 +129,7 @@ public class CampanhaDaoJDBC implements CampanhaDao {
         Campanha obj = new Campanha();
         obj.setId(rs.getInt("id_campanha"));
         obj.setNome(rs.getString("nome"));
-        obj.setXpProxNivel(rs.getInt("xpParaProximoNivel"));
+        obj.setUsaSanidade(rs.getInt("usaRegraDeSanidade") == 1);
         return obj;
     }
     

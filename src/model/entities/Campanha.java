@@ -5,7 +5,7 @@ import java.util.Objects;
 
 public class Campanha {
 	private String nome;
-	private int xpProxNivel;
+	private boolean usaSanidade;
 	private List<Personagem> personagens;
 	private Integer Id;
 	
@@ -13,15 +13,14 @@ public class Campanha {
 		
 	}
 
-	public Campanha(String nome, int xpProxNivel, List<Personagem> personagens) {
+	public Campanha(String nome, List<Personagem> personagens) {
 		this.nome = nome;
-		this.xpProxNivel = xpProxNivel;
 		this.personagens = personagens;
 	}
 	
-	public Campanha(String nome, int xpProxNivel) {
+	public Campanha(String nome, boolean usaSanidade) {
 		this.nome = nome;
-		this.xpProxNivel = xpProxNivel;
+		this.usaSanidade = usaSanidade;
 	}
 	
 	public Integer getId() {
@@ -40,12 +39,12 @@ public class Campanha {
 		this.nome = nome;
 	}
 
-	public int getXpProxNivel() {
-		return xpProxNivel;
+	public boolean isUsaSanidade() {
+		return usaSanidade;
 	}
 
-	public void setXpProxNivel(int xpProxNivel) {
-		this.xpProxNivel = xpProxNivel;
+	public void setUsaSanidade(boolean usaSanidade) {
+		this.usaSanidade = usaSanidade;
 	}
 
 	public List<Personagem> getPersonagens() {
@@ -75,10 +74,7 @@ public class Campanha {
 
 	@Override
 	public String toString() {
-		return "Campanha [nome=" + nome + ", xpProxNivel=" + xpProxNivel + ", personagens=" + personagens + ", Id=" + Id
-				+ "]";
+		return "Campanha [nome=" + nome + ", usaSanidade=" + usaSanidade + ", personagens=" + personagens + "]";
 	}
 
-	
-	
 }
